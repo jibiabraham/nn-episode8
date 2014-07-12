@@ -10,7 +10,7 @@ import android.provider.BaseColumns;
  *  1. NotePad sample app provided in the Android SDK
  */
 public final class PGContract {
-    public static final String AUTHORITY = "com.nn.studio.episode7";
+    public static final String AUTHORITY = "com.nn.studio.episode8";
 
     // An empty constructor - must not be initiated
     private PGContract(){}

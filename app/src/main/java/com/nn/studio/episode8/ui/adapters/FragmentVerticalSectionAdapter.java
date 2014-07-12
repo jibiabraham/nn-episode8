@@ -7,19 +7,25 @@ import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.view.ViewGroup;
+import android.util.Log;
+
+import com.nn.studio.episode8.model.Discussion;
+import com.nn.studio.episode8.provider.PGContract;
+import com.nn.studio.episode8.ui.FragmentVerticalSection;
 
 /**
  * Created by jibi on 12/7/14.
  */
-public class FragmentVerticalSectionAdapter extends FragmentStatePagerAdapter {
+public class FragmentVerticalSectionAdapter extends VerticalPagerAdapter {
+    private static final String TAG = "FragmentVerticalSectionAdapter";
     private Cursor mCursor;
     private Context mContext;
+    private String[] DEFAULT_PROJECTION = PGContract.Discussions.DEFAULT_PROJECTION;
 
-    public FragmentVerticalSectionAdapter(Context context, FragmentManager fm, Uri queryUri) {
+    public FragmentVerticalSectionAdapter(Context context, FragmentManager fm, Cursor mCursor) {
         super(fm);
         mContext = context;
-        mCursor = mContext.getContentResolver().query(queryUri, null, null, null, null);
+        mCursor = mCursor;
     }
 
     @Override
@@ -27,10 +33,21 @@ public class FragmentVerticalSectionAdapter extends FragmentStatePagerAdapter {
         return super.saveState();
     }
 
+    public Cursor swapCursor(Cursor newCursor){
+        if(newCursor == mCursor){
+            return null;
+        }
+        mCursor = newCursor;
+        notifyDataSetChanged();
+        return mCursor;
+    }
+
     @Override
     public Fragment getItem(int position) {
         if(mCursor != null){
             mCursor.moveToPosition(position);
+            Discussion d = new Discussion(mCursor);
+            return FragmentVerticalSection.newInstance(d);
         }
         return null;
     }

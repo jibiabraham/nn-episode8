@@ -28,7 +28,7 @@ public class PGProvider extends ContentProvider {
     private static final String TAG = "PGContentProvider";
 
     private static final String DATABASE_NAME = "pg.db";
-    private static final int DATABASE_VERSION = 16;
+    private static final int DATABASE_VERSION = 2;
 
     private static HashMap<String, String> sForumsProjectionMap;
     private static HashMap<String, String> sDiscussionsProjectionMap;

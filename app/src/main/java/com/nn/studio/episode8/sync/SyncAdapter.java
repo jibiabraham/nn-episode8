@@ -16,6 +16,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.nn.studio.episode8.model.Discussion;
+import com.nn.studio.episode8.provider.PGContract;
 
 import org.json.JSONArray;
 import org.json.JSONException;

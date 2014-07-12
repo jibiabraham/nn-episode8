@@ -1,8 +1,10 @@
 package com.nn.studio.episode8.model;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import com.nn.studio.episode8.provider.PGContract;
 
@@ -11,6 +13,7 @@ import com.nn.studio.episode8.provider.PGContract;
  *
  */
 public class Discussion implements Parcelable {
+    private static final String TAG = "MODEL:Discussion";
     public Long _id;
     public String title;
     public String url;
@@ -35,7 +38,7 @@ public class Discussion implements Parcelable {
         this.forum_id = forum_id;
     }
 
-    public Discussion(Long id, String url, String title, Long forum_id) {
+    public Discussion(Long id, String title, String url, Long forum_id) {
         this._id = id;
         this.title = title;
         this.url = url;
@@ -46,6 +49,15 @@ public class Discussion implements Parcelable {
         _id = source.readLong();
         title = source.readString();
         url = source.readString();
+    }
+
+    public Discussion(Cursor cursor){
+        _id = cursor.getLong(cursor.getColumnIndex(PGContract.Discussions._ID));
+        title = cursor.getString(cursor.getColumnIndex(PGContract.Discussions.COLUMN_NAME_TITLE));
+        url = cursor.getString(cursor.getColumnIndex(PGContract.Discussions.COLUMN_NAME_URL));
+        created = cursor.getLong(cursor.getColumnIndex(PGContract.Discussions.COLUMN_NAME_CREATE_DATE));
+        modified = cursor.getLong(cursor.getColumnIndex(PGContract.Discussions.COLUMN_NAME_MODIFICATION_DATE));
+        forum_id = cursor.getLong(cursor.getColumnIndex(PGContract.Discussions.COLUMN_NAME_FORUM_ID));
     }
 
     public static final Creator<Discussion> CREATOR = new Creator<Discussion>() {
