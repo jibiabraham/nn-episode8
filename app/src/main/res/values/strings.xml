@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">episode8</string>
+    <string name="discussion_title">Life in a Metro</string>
+    <string name="post_age_new">new</string>
+    <string name="post_age_old">ancient</string>
+    <string name="post_age_stale">stale</string>
+    <string name="post_age_updated">updated</string>
+    <string name="post_content_preview">
+        Bangalore.
+        \n\nHired an auto rickshaw from Majestic to BTM, had to bribe him with my shoe to charge me meter fare. On reaching BTM, I had to give him my second shoe to pay the fare.
+        \n\nNow, I was Bilbo Baggins.
+        \n\nThe weather was cool; my friend was missing. I called him; he gave me the address and suggested I take a rickshaw. I cried. I do not cry easily, but that statement had made me feel lonely. Anyhow, I took another auto but had to leave my bag behind in it. This guy was kinder, he allowed me to take my documents from the bag. I hugged him before saying goodbye.
+    </string>
+    <string name="comments">15 people commented on this</string>
+    <string name="likes">315 people like this</string>
+    <string name="author">with love, @gypsycab</string>
+</resources>
