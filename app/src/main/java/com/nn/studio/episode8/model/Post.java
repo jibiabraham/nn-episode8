@@ -1,7 +1,10 @@
 package com.nn.studio.episode8.model;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.net.Uri;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import com.nn.studio.episode8.provider.PGContract;
 
@@ -11,7 +14,7 @@ import org.json.JSONObject;
 /**
  * Created by jibi on 10/7/14.
  */
-public class Post {
+public class Post implements Parcelable {
     public Long _id;
     public String content;
     public String author;
@@ -46,6 +49,32 @@ public class Post {
         this.commentsCount = commentsCount;
         this.likesCount = likesCount;
         this.author_id = authorId;
+    }
+
+    public Post (Cursor data){
+        _id = data.getLong(data.getColumnIndex(PGContract.Posts._ID));
+        content = data.getString(data.getColumnIndex(PGContract.Posts.COLUMN_NAME_CONTENT));
+        author = data.getString(data.getColumnIndex(PGContract.Posts.COLUMN_NAME_AUTHOR));
+        likesCount = data.getInt(data.getColumnIndex(PGContract.Posts.COLUMN_NAME_LIKES_COUNT));
+        commentsCount = data.getInt(data.getColumnIndex(PGContract.Posts.COLUMN_NAME_COMMENTS_COUNT));
+        created = data.getLong(data.getColumnIndex(PGContract.Posts.COLUMN_NAME_CREATE_DATE));
+        modified = data.getLong(data.getColumnIndex(PGContract.Posts.COLUMN_NAME_MODIFICATION_DATE));
+        discussion_id = data.getLong(data.getColumnIndex(PGContract.Posts.COLUMN_NAME_DISCUSSION_ID));
+        forum_id = data.getLong(data.getColumnIndex(PGContract.Posts.COLUMN_NAME_FORUM_ID));
+        author_id = data.getLong(data.getColumnIndex(PGContract.Posts.COLUMN_NAME_AUTHOR_ID));
+    }
+
+    public Post (Parcel parcel){
+        _id = parcel.readLong();
+        content = parcel.readString();
+        author = parcel.readString();
+        likesCount = parcel.readInt();
+        commentsCount = parcel.readInt();
+        created = parcel.readLong();
+        modified = parcel.readLong();
+        discussion_id = parcel.readLong();
+        forum_id = parcel.readLong();
+        author_id = parcel.readLong();
     }
 
     public static Post fromJson(JSONObject post){
@@ -94,5 +123,58 @@ public class Post {
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("http").authority(AUTHORITY).appendPath("comments").appendPath(Long.toString(_id)).appendQueryParameter("pages", "1,2,3,4,5");
         return builder.build().toString();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeLong(_id);
+        parcel.writeString(content);
+        parcel.writeString(author);
+        parcel.writeInt(likesCount);
+        parcel.writeInt(commentsCount);
+        parcel.writeLong(created);
+        parcel.writeLong(modified);
+        parcel.writeLong(discussion_id);
+        parcel.writeLong(forum_id);
+        parcel.writeLong(author_id);
+    }
+
+    public static final Creator<Post> CREATOR = new Creator<Post>() {
+        @Override
+        public Post createFromParcel(Parcel parcel) {
+            return new Post(parcel);
+        }
+
+        @Override
+        public Post[] newArray(int size) {
+            return new Post[size];
+        }
+    };
+
+    public String getAuthorAsString(){
+        return "with love, " + author;
+    }
+
+    public String getCommentsCountAsString(){
+        if(commentsCount == 1){
+            return "1 person has commented on this";
+        } else if (commentsCount > 1){
+            return Integer.toString(commentsCount) + " people have commented on this";
+        }
+        return "No one seems interested in this, yet.";
+    }
+
+    public String getLikesCountAsString(){
+        if(likesCount == 1){
+            return "1 person likes this";
+        } else if (likesCount > 1){
+            return Integer.toString(likesCount) + " people like this";
+        }
+        return "This seems to an ugly duckling. No one likes it :(";
     }
 }

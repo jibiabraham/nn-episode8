@@ -29,8 +29,6 @@ public final class NetworkImageRequests {
         // define cache folder
         File rootCache = context.getExternalCacheDir();
         if (rootCache == null) {
-            Log.w(TAG, "Can't find External Cache Dir, "
-                    + "switching to application specific cache directory");
             rootCache = context.getCacheDir();
         }
 

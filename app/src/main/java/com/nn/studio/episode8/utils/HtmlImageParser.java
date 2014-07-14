@@ -27,7 +27,6 @@ public class HtmlImageParser implements Html.ImageGetter {
     public HtmlImageParser(Context context, View container) {
         this.context = context;
         this.container = container;
-        Log.w(TAG, "Instantiated HtmlImageParser");
     }
 
     @Override

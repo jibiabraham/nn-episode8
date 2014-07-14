@@ -98,6 +98,11 @@ public final class PGContract {
         public static final String COLUMN_NAME_DISCUSSION_ID = "discussion_id";
         public static final String COLUMN_NAME_FORUM_ID = "forum_id";
         public static final String COLUMN_NAME_AUTHOR_ID = "author_id";
+
+        public static Uri getNestedUrl(Long forumId, Long discussionId){
+            String url = String.format(SCHEME + AUTHORITY + Forums.PATH_FORUMS + "/%s" + Discussions.PATH_DISCUSSIONS + "/%s" + PATH_POSTS, Long.toString(forumId), Long.toString(discussionId));
+            return Uri.parse(url);
+        }
     }
 
     // Comments table

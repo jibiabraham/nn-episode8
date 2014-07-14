@@ -17,56 +17,9 @@
         android:layout_marginTop="10dp"
         android:layout_marginBottom="20dp"></View>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:textColor="@color/age_ancient"
-        android:layout_marginBottom="20dp"
-        android:textSize="11sp"
-        android:text="@string/post_age_old"/>
-
-    <TextView
+    <com.nn.studio.episode8.ui.views.SmartViewPager
+        android:id="@+id/discussion_posts"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/post_content_preview"/>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:text="..."/>
-
-    <View style="@style/Divider"
-        android:layout_marginTop="15dp"
-        android:layout_marginBottom="5dp"></View>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="#9e9e9e"
-        android:text="@string/author"
-        android:textSize="10sp"
-        android:textStyle="bold|italic"
-        android:gravity="right"/>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="#9e9e9e"
-        android:text="@string/comments"
-        android:textSize="10sp"
-        android:textStyle="bold|italic"
-        android:gravity="right" />
-
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="#9e9e9e"
-        android:text="@string/likes"
-        android:textSize="10sp"
-        android:textStyle="bold|italic"
-        android:gravity="right" />
+        android:layout_height="match_parent"></com.nn.studio.episode8.ui.views.SmartViewPager>
 
 </LinearLayout>

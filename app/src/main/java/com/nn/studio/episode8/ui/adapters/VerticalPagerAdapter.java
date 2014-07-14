@@ -24,11 +24,6 @@ public class VerticalPagerAdapter extends FragmentStatePagerAdapter {
         return null;
     }
 
-    @Override
-    public boolean isViewFromObject(View view, Object object) {
-        return false;
-    }
-
     public float getPageHeight(int position) {
         return 1.f;
     }

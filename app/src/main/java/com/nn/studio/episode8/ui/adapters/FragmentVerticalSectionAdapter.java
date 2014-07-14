@@ -24,8 +24,8 @@ public class FragmentVerticalSectionAdapter extends VerticalPagerAdapter {
 
     public FragmentVerticalSectionAdapter(Context context, FragmentManager fm, Cursor mCursor) {
         super(fm);
-        mContext = context;
-        mCursor = mCursor;
+        this.mContext = context;
+        this.mCursor = mCursor;
     }
 
     @Override
@@ -33,21 +33,14 @@ public class FragmentVerticalSectionAdapter extends VerticalPagerAdapter {
         return super.saveState();
     }
 
-    public Cursor swapCursor(Cursor newCursor){
-        if(newCursor == mCursor){
-            return null;
-        }
-        mCursor = newCursor;
-        notifyDataSetChanged();
-        return mCursor;
-    }
-
     @Override
     public Fragment getItem(int position) {
         if(mCursor != null){
+            Log.w(TAG, "getItem called");
             mCursor.moveToPosition(position);
             Discussion d = new Discussion(mCursor);
-            return FragmentVerticalSection.newInstance(d);
+            FragmentVerticalSection fragment = FragmentVerticalSection.newInstance(d);
+            return fragment;
         }
         return null;
     }
@@ -58,6 +51,19 @@ public class FragmentVerticalSectionAdapter extends VerticalPagerAdapter {
             return mCursor.getCount();
         }
         return 0;
+    }
+
+    public void swapCursor(Cursor c){
+        if(mCursor == c){
+            return;
+        }
+        this.mCursor = c;
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public float getPageHeight(int position) {
+        return super.getPageHeight(position);
     }
 
     public Cursor getCursor(){

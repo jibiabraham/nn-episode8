@@ -28,7 +28,7 @@ public class PGProvider extends ContentProvider {
     private static final String TAG = "PGContentProvider";
 
     private static final String DATABASE_NAME = "pg.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 6;
 
     private static HashMap<String, String> sForumsProjectionMap;
     private static HashMap<String, String> sDiscussionsProjectionMap;
@@ -74,12 +74,12 @@ public class PGProvider extends ContentProvider {
         sUriMatcher.addURI(PGContract.AUTHORITY, "/users/#", USER_ID);
 
         // Nested urls
-        sUriMatcher.addURI(PGContract.AUTHORITY, "/forums/#/discussions", DISCUSSIONS);
-        sUriMatcher.addURI(PGContract.AUTHORITY, "/forums/#/discussions/#", DISCUSSION_ID);
-        sUriMatcher.addURI(PGContract.AUTHORITY, "/forums/#/discussions/#/posts", POSTS);
-        sUriMatcher.addURI(PGContract.AUTHORITY, "/forums/#/discussions/#/posts/#", POST_ID);
-        sUriMatcher.addURI(PGContract.AUTHORITY, "/forums/#/discussions/#/posts/#/comments", COMMENTS);
-        sUriMatcher.addURI(PGContract.AUTHORITY, "/forums/#/discussions/#/posts/#/comments/#", COMMENT_ID);
+        sUriMatcher.addURI(PGContract.AUTHORITY, "/forums/#/discussions", FORUM_DISCUSSIONS);
+        sUriMatcher.addURI(PGContract.AUTHORITY, "/forums/#/discussions/#", FORUM_DISCUSSION_ID);
+        sUriMatcher.addURI(PGContract.AUTHORITY, "/forums/#/discussions/#/posts", FORUM_DISCUSSION_POSTS);
+        sUriMatcher.addURI(PGContract.AUTHORITY, "/forums/#/discussions/#/posts/#", FORUM_DISCUSSION_POST_ID);
+        sUriMatcher.addURI(PGContract.AUTHORITY, "/forums/#/discussions/#/posts/#/comments", FORUM_DISCUSSION_POST_COMMENTS);
+        sUriMatcher.addURI(PGContract.AUTHORITY, "/forums/#/discussions/#/posts/#/comments/#", FORUM_DISCUSSION_POST_COMMENT_ID);
 
         // Define the projection maps. Why, you ask? Keep asking for now.
         sForumsProjectionMap = new HashMap<String, String>(){{
@@ -146,6 +146,8 @@ public class PGProvider extends ContentProvider {
 
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
         int matchType = sUriMatcher.match(uri);
+        String forumId;
+        String discussionId;
         List<String> pathSegments = uri.getPathSegments();
 
         String orderBy;
@@ -173,19 +175,28 @@ public class PGProvider extends ContentProvider {
                 orderBy = TextUtils.isEmpty(sortOrder) ? PGContract.Discussions.DEFAULT_SORT_ORDER : sortOrder;
                 break;
             case FORUM_DISCUSSIONS:
-                String forumId = pathSegments.get(PGContract.Forums.FORUM_ID_PATH_POSITION);
+                forumId = pathSegments.get(PGContract.Forums.FORUM_ID_PATH_POSITION);
                 qb.setTables(PGContract.Discussions.TABLE_NAME);
                 qb.appendWhere(PGContract.Forums._ID + "=" + forumId);
                 orderBy = TextUtils.isEmpty(sortOrder) ? PGContract.Discussions.DEFAULT_SORT_ORDER : sortOrder;
                 break;
             case POSTS:
             case POST_ID:
+            case FORUM_DISCUSSION_POSTS:
                 qb.setTables(PGContract.Posts.TABLE_NAME);
                 if(matchType == POST_ID){
                     qb.appendWhere(
                             PGContract.Posts._ID + "="
                             + uri.getPathSegments().get(PGContract.Posts.POST_ID_PATH_POSITION));
                 }
+                if(matchType == FORUM_DISCUSSION_POSTS){
+                    forumId = pathSegments.get(PGContract.Forums.FORUM_ID_PATH_POSITION);
+                    discussionId = pathSegments.get(PGContract.Discussions.DISCUSSION_ID_PATH_POSITION_NESTED);
+                    qb.appendWhere(PGContract.Posts.COLUMN_NAME_FORUM_ID + "=" + forumId +
+                        " AND " + PGContract.Posts.COLUMN_NAME_DISCUSSION_ID + "=" + discussionId
+                    );
+                }
+                Log.w(TAG, qb.buildQuery(null, null, null, null, null, null).toString());
                 orderBy = TextUtils.isEmpty(sortOrder) ? PGContract.Posts.DEFAULT_SORT_ORDER : sortOrder;
                 break;
             case COMMENTS:

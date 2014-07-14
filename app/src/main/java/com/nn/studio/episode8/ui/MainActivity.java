@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 
 import com.nn.studio.episode8.R;
 import com.nn.studio.episode8.provider.PGContract;
@@ -21,6 +22,7 @@ import com.nn.studio.episode8.ui.views.VerticalViewPager;
  * Created by jibi on 12/7/14.
  */
 public class MainActivity extends FragmentActivity implements LoaderManager.LoaderCallbacks<Cursor>  {
+    private static final String TAG = "MainActivity";
     private static final int URL_LOADER = 0;
     private FragmentVerticalSectionAdapter mAdapter;
     private final String DISCUSSION_URI = "discussion_uri";
@@ -29,20 +31,24 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_discussions);
+
+        vvp = (VerticalViewPager) findViewById(R.id.vertical_section);
+        if(mAdapter == null){
+            mAdapter = new FragmentVerticalSectionAdapter(getApplicationContext(), getSupportFragmentManager(), null);
+        }
+        vvp.setAdapter(mAdapter);
 
         Bundle args = new Bundle();
         args.putString(DISCUSSION_URI, PGContract.Discussions.CONTENT_URI.toString());
         getSupportLoaderManager().initLoader(URL_LOADER, args, this);
 
-        Account dummyAccount = new Account("jibi.pg", "com.pagalguy");
+        /*Account dummyAccount = new Account("jibi.pg", "com.pagalguy");
         AccountManager accountManager = (AccountManager) this.getSystemService(ACCOUNT_SERVICE);
         accountManager.addAccountExplicitly(dummyAccount, "pwd", Bundle.EMPTY);
 
         ContentResolver.setIsSyncable(dummyAccount, PGContract.AUTHORITY, 1);
-        ContentResolver.requestSync(dummyAccount, PGContract.AUTHORITY, Bundle.EMPTY);
-
-        vvp = (VerticalViewPager) findViewById(R.id.vertical_section);
+        ContentResolver.requestSync(dummyAccount, PGContract.AUTHORITY, Bundle.EMPTY);*/
     }
 
     @Override
@@ -58,9 +64,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mAdapter = new FragmentVerticalSectionAdapter(getApplicationContext(), getSupportFragmentManager(), data);
-        vvp.setAdapter(mAdapter);
-        mAdapter.notifyDataSetChanged();
+        mAdapter.swapCursor(data);
     }
 
     @Override
