@@ -43,12 +43,14 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
         args.putString(DISCUSSION_URI, PGContract.Discussions.CONTENT_URI.toString());
         getSupportLoaderManager().initLoader(URL_LOADER, args, this);
 
-        /*Account dummyAccount = new Account("jibi.pg", "com.pagalguy");
+        Account dummyAccount = new Account("jibi.pg", "com.pagalguy");
         AccountManager accountManager = (AccountManager) this.getSystemService(ACCOUNT_SERVICE);
         accountManager.addAccountExplicitly(dummyAccount, "pwd", Bundle.EMPTY);
 
+        Bundle syncArgs = new Bundle();
+        syncArgs.putBoolean("dumbSync", false);
         ContentResolver.setIsSyncable(dummyAccount, PGContract.AUTHORITY, 1);
-        ContentResolver.requestSync(dummyAccount, PGContract.AUTHORITY, Bundle.EMPTY);*/
+        ContentResolver.requestSync(dummyAccount, PGContract.AUTHORITY, syncArgs);
     }
 
     @Override
@@ -64,7 +66,9 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mAdapter.swapCursor(data);
+        if(data != null && data.getCount() > 0){
+            mAdapter.swapCursor(data);
+        }
     }
 
     @Override

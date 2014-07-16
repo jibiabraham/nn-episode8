@@ -45,20 +45,23 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     public void onPerformSync(Account account, Bundle bundle, String s, ContentProviderClient contentProviderClient, SyncResult syncResult) {
         Log.w(TAG, "onPerformSync");
 
-        /*final ContentResolver cr = getContext().getContentResolver();
-        Cursor forums = cr.query(PGContract.Forums.CONTENT_URI, PGContract.Forums.DEFAULT_PROJECTION, null, null, null);
-        final HashMap<String, Long> forumIdMap = new HashMap<String, Long>();
-        if (forums.getCount() > 0){
-            int indexId = forums.getColumnIndex(PGContract.Forums._ID);
-            int indexUrlStarsWith = forums.getColumnIndex(PGContract.Forums.COLUMN_NAME_URL_STARTSWITH);
-            for (int i = 0; i < forums.getCount(); i++) {
-                forums.moveToPosition(i);
-                Long forumId = forums.getLong(indexId);
-                String urlStartsWith = forums.getString(indexUrlStarsWith);
-                forumIdMap.put(urlStartsWith, forumId);
+        if(bundle.getBoolean("dumbSync")){
+            final ContentResolver cr = getContext().getContentResolver();
+            Cursor forums = cr.query(PGContract.Forums.CONTENT_URI, PGContract.Forums.DEFAULT_PROJECTION, null, null, null);
+            final HashMap<String, Long> forumIdMap = new HashMap<String, Long>();
+            if (forums.getCount() > 0){
+                int indexId = forums.getColumnIndex(PGContract.Forums._ID);
+                int indexUrlStarsWith = forums.getColumnIndex(PGContract.Forums.COLUMN_NAME_URL_STARTSWITH);
+                for (int i = 0; i < forums.getCount(); i++) {
+                    forums.moveToPosition(i);
+                    Long forumId = forums.getLong(indexId);
+                    String urlStartsWith = forums.getString(indexUrlStarsWith);
+                    forumIdMap.put(urlStartsWith, forumId);
+                }
+                RequestProxy.getDiscussionsInForums(getContext(), forumIdMap);
+                Log.w(TAG, forumIdMap.toString());
             }
-            RequestProxy.getDiscussionsInForums(getContext(), forumIdMap);
-            Log.w(TAG, forumIdMap.toString());
-        }*/
+        }
+
     }
 }

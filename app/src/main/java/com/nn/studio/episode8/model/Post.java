@@ -8,6 +8,7 @@ import android.os.Parcelable;
 
 import com.nn.studio.episode8.provider.PGContract;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,6 +18,9 @@ import org.json.JSONObject;
 public class Post implements Parcelable {
     public Long _id;
     public String content;
+    public Integer type;
+    public String options;
+    public Integer isMultiChoice;
     public String author;
     public Integer likesCount;
     public Integer commentsCount;
@@ -51,9 +55,28 @@ public class Post implements Parcelable {
         this.author_id = authorId;
     }
 
+    public Post(Long _id, String content, Integer type, String options, Integer isMultiChoice, String author, Integer likesCount, Integer commentsCount, Long author_id) {
+        this._id = _id;
+        this.content = content;
+        this.type = type;
+        this.options = options;
+        this.isMultiChoice = isMultiChoice;
+        this.author = author;
+        this.likesCount = likesCount;
+        this.commentsCount = commentsCount;
+        this.created = created;
+        this.modified = modified;
+        this.discussion_id = discussion_id;
+        this.forum_id = forum_id;
+        this.author_id = author_id;
+    }
+
     public Post (Cursor data){
         _id = data.getLong(data.getColumnIndex(PGContract.Posts._ID));
         content = data.getString(data.getColumnIndex(PGContract.Posts.COLUMN_NAME_CONTENT));
+        type = data.getInt(data.getColumnIndex(PGContract.Posts.COLUMN_NAME_POST_TYPE));
+        options = data.getString(data.getColumnIndex(PGContract.Posts.COLUMN_NAME_OPTIONS));
+        isMultiChoice = data.getInt(data.getColumnIndex(PGContract.Posts.COLUMN_NAME_IS_MULTICHOICE));
         author = data.getString(data.getColumnIndex(PGContract.Posts.COLUMN_NAME_AUTHOR));
         likesCount = data.getInt(data.getColumnIndex(PGContract.Posts.COLUMN_NAME_LIKES_COUNT));
         commentsCount = data.getInt(data.getColumnIndex(PGContract.Posts.COLUMN_NAME_COMMENTS_COUNT));
@@ -67,6 +90,9 @@ public class Post implements Parcelable {
     public Post (Parcel parcel){
         _id = parcel.readLong();
         content = parcel.readString();
+        type = parcel.readInt();
+        options = parcel.readString();
+        isMultiChoice = parcel.readInt();
         author = parcel.readString();
         likesCount = parcel.readInt();
         commentsCount = parcel.readInt();
@@ -81,11 +107,14 @@ public class Post implements Parcelable {
         try{
             Long id = post.getLong("id");
             String content = post.getString("content");
+            Integer type = post.has("isQuestion") && post.getBoolean("isQuestion") ? PGContract.Posts.POST_TYPES.QUESTION : PGContract.Posts.POST_TYPES.POST;
+            String options = post.has("options") ? post.getJSONArray("options").toString() : "";
+            Integer isMultiChoice = post.has("isMultiChoice") && post.getBoolean("isMultiChoice") ? 1 : 0;
             String author = post.getJSONObject("author").getString("nick");
             Integer commentsCount = post.has("cmc") ? post.getInt("cmc") : 0;
             Integer likesCount = post.has("lkc") ? post.getInt("lkc") : 0;
             Long authorId = post.getJSONObject("author").getLong("id");
-            return new Post(id, content, author, commentsCount, likesCount, authorId);
+            return new Post(id, content, type, options, isMultiChoice, author, commentsCount, likesCount, authorId);
         } catch (JSONException ex){
             ex.printStackTrace();
             return null;
@@ -105,6 +134,9 @@ public class Post implements Parcelable {
             cv.put(PGContract.Posts._ID, _id);
         }
         cv.put(PGContract.Posts.COLUMN_NAME_CONTENT, content);
+        cv.put(PGContract.Posts.COLUMN_NAME_POST_TYPE, type);
+        cv.put(PGContract.Posts.COLUMN_NAME_OPTIONS, options);
+        cv.put(PGContract.Posts.COLUMN_NAME_IS_MULTICHOICE, isMultiChoice);
         cv.put(PGContract.Posts.COLUMN_NAME_AUTHOR, author);
         cv.put(PGContract.Posts.COLUMN_NAME_LIKES_COUNT, likesCount);
         cv.put(PGContract.Posts.COLUMN_NAME_COMMENTS_COUNT, commentsCount);
@@ -134,6 +166,9 @@ public class Post implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeLong(_id);
         parcel.writeString(content);
+        parcel.writeInt(type);
+        parcel.writeString(options);
+        parcel.writeInt(isMultiChoice);
         parcel.writeString(author);
         parcel.writeInt(likesCount);
         parcel.writeInt(commentsCount);
@@ -176,5 +211,21 @@ public class Post implements Parcelable {
             return Integer.toString(likesCount) + " people like this";
         }
         return "This seems to an ugly duckling. No one likes it :(";
+    }
+
+    public JSONArray getOptions(){
+        if(type == PGContract.Posts.POST_TYPES.QUESTION){
+            try {
+                JSONArray json = new JSONArray(options);
+                return json;
+            } catch (JSONException ex){
+                ex.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    public Boolean isQuestion(){
+        return type == PGContract.Posts.POST_TYPES.QUESTION;
     }
 }

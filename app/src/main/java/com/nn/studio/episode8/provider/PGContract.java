@@ -56,6 +56,7 @@ public final class PGContract {
         public static final Uri CONTENT_NESTED_URI = Uri.parse(SCHEME + AUTHORITY + Forums.PATH_FORUMS + "/#" + PATH_DISCUSSIONS);
         public static final Uri CONTENT_ID_URI_BASE = Uri.parse(SCHEME + AUTHORITY + PATH_DISCUSSION_ID);
         public static final Uri CONTENT_ID_URI_PATTERN = Uri.parse(SCHEME + AUTHORITY + PATH_DISCUSSION_ID + "/#");
+        public static final Uri QUESTIONABLE_CONTENT = Uri.parse(SCHEME + AUTHORITY + PATH_DISCUSSION_ID + "28264702/questions");
 
         public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.nn.studio.pg.discussion";
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.nn.studio.pg.discussion";
@@ -74,9 +75,16 @@ public final class PGContract {
     public static final class Posts implements BaseColumns {
         private Posts(){}
 
+        public static class POST_TYPES {
+            private POST_TYPES(){}
+            public static Integer QUESTION = 1;
+            public static Integer POST = 2;
+        }
+
         public static final String TABLE_NAME = "posts";
         public static final String SCHEME = "content://";
         public static final String PATH_POSTS = "/posts";
+        public static final String PATH_QUESTIONS = "/questions";
         public static final String PATH_POST_ID = "/posts/";
         public static final int POST_ID_PATH_POSITION = 1;
         public static final int POST_ID_PATH_POSITION_NESTED = 5;
@@ -90,6 +98,9 @@ public final class PGContract {
         public static final String DEFAULT_SORT_ORDER = "modified DESC";
 
         public static final String COLUMN_NAME_CONTENT = "content";
+        public static final String COLUMN_NAME_POST_TYPE = "type";
+        public static final String COLUMN_NAME_IS_MULTICHOICE = "is_multichoice";
+        public static final String COLUMN_NAME_OPTIONS = "options";
         public static final String COLUMN_NAME_AUTHOR = "author";
         public static final String COLUMN_NAME_LIKES_COUNT = "likes_count";
         public static final String COLUMN_NAME_COMMENTS_COUNT = "comments_count";
@@ -101,6 +112,11 @@ public final class PGContract {
 
         public static Uri getNestedUrl(Long forumId, Long discussionId){
             String url = String.format(SCHEME + AUTHORITY + Forums.PATH_FORUMS + "/%s" + Discussions.PATH_DISCUSSIONS + "/%s" + PATH_POSTS, Long.toString(forumId), Long.toString(discussionId));
+            return Uri.parse(url);
+        }
+
+        public static Uri getNestedQuestionUrl(Long forumId, Long discussionId){
+            String url = String.format(SCHEME + AUTHORITY + Forums.PATH_FORUMS + "/%s" + Discussions.PATH_DISCUSSIONS + "/%s" + PATH_QUESTIONS, Long.toString(forumId), Long.toString(discussionId));
             return Uri.parse(url);
         }
     }

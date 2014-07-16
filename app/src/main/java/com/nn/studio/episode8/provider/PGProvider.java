@@ -28,7 +28,7 @@ public class PGProvider extends ContentProvider {
     private static final String TAG = "PGContentProvider";
 
     private static final String DATABASE_NAME = "pg.db";
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 17;
 
     private static HashMap<String, String> sForumsProjectionMap;
     private static HashMap<String, String> sDiscussionsProjectionMap;
@@ -46,7 +46,8 @@ public class PGProvider extends ContentProvider {
     private static final int POSTS = 300;
     private static final int POST_ID = 301;
     private static final int FORUM_DISCUSSION_POSTS = 302;
-    private static final int FORUM_DISCUSSION_POST_ID = 303;
+    private static final int FORUM_DISCUSSION_QUESTIONS = 303;
+    private static final int FORUM_DISCUSSION_POST_ID = 304;
     private static final int COMMENTS = 400;
     private static final int COMMENT_ID = 401;
     private static final int FORUM_DISCUSSION_POST_COMMENTS = 402;
@@ -77,6 +78,7 @@ public class PGProvider extends ContentProvider {
         sUriMatcher.addURI(PGContract.AUTHORITY, "/forums/#/discussions", FORUM_DISCUSSIONS);
         sUriMatcher.addURI(PGContract.AUTHORITY, "/forums/#/discussions/#", FORUM_DISCUSSION_ID);
         sUriMatcher.addURI(PGContract.AUTHORITY, "/forums/#/discussions/#/posts", FORUM_DISCUSSION_POSTS);
+        sUriMatcher.addURI(PGContract.AUTHORITY, "/forums/#/discussions/#/questions", FORUM_DISCUSSION_QUESTIONS);
         sUriMatcher.addURI(PGContract.AUTHORITY, "/forums/#/discussions/#/posts/#", FORUM_DISCUSSION_POST_ID);
         sUriMatcher.addURI(PGContract.AUTHORITY, "/forums/#/discussions/#/posts/#/comments", FORUM_DISCUSSION_POST_COMMENTS);
         sUriMatcher.addURI(PGContract.AUTHORITY, "/forums/#/discussions/#/posts/#/comments/#", FORUM_DISCUSSION_POST_COMMENT_ID);
@@ -102,6 +104,9 @@ public class PGProvider extends ContentProvider {
         sPostsProjectionMap = new HashMap<String, String>(){{
             put(PGContract.Posts._ID, PGContract.Posts._ID);
             put(PGContract.Posts.COLUMN_NAME_CONTENT, PGContract.Posts.COLUMN_NAME_CONTENT);
+            put(PGContract.Posts.COLUMN_NAME_POST_TYPE, PGContract.Posts.COLUMN_NAME_POST_TYPE);
+            put(PGContract.Posts.COLUMN_NAME_OPTIONS, PGContract.Posts.COLUMN_NAME_OPTIONS);
+            put(PGContract.Posts.COLUMN_NAME_IS_MULTICHOICE, PGContract.Posts.COLUMN_NAME_IS_MULTICHOICE);
             put(PGContract.Posts.COLUMN_NAME_AUTHOR, PGContract.Posts.COLUMN_NAME_AUTHOR);
             put(PGContract.Posts.COLUMN_NAME_LIKES_COUNT, PGContract.Posts.COLUMN_NAME_LIKES_COUNT);
             put(PGContract.Posts.COLUMN_NAME_COMMENTS_COUNT, PGContract.Posts.COLUMN_NAME_COMMENTS_COUNT);
@@ -183,6 +188,7 @@ public class PGProvider extends ContentProvider {
             case POSTS:
             case POST_ID:
             case FORUM_DISCUSSION_POSTS:
+            case FORUM_DISCUSSION_QUESTIONS:
                 qb.setTables(PGContract.Posts.TABLE_NAME);
                 if(matchType == POST_ID){
                     qb.appendWhere(
@@ -194,6 +200,14 @@ public class PGProvider extends ContentProvider {
                     discussionId = pathSegments.get(PGContract.Discussions.DISCUSSION_ID_PATH_POSITION_NESTED);
                     qb.appendWhere(PGContract.Posts.COLUMN_NAME_FORUM_ID + "=" + forumId +
                         " AND " + PGContract.Posts.COLUMN_NAME_DISCUSSION_ID + "=" + discussionId
+                    );
+                }
+                if(matchType == FORUM_DISCUSSION_QUESTIONS){
+                    forumId = pathSegments.get(PGContract.Forums.FORUM_ID_PATH_POSITION);
+                    discussionId = pathSegments.get(PGContract.Discussions.DISCUSSION_ID_PATH_POSITION_NESTED);
+                    qb.appendWhere(PGContract.Posts.COLUMN_NAME_FORUM_ID + "=" + forumId +
+                                    " AND " + PGContract.Posts.COLUMN_NAME_DISCUSSION_ID + "=" + discussionId +
+                                    " AND " + PGContract.Posts.COLUMN_NAME_POST_TYPE + "=1"
                     );
                 }
                 Log.w(TAG, qb.buildQuery(null, null, null, null, null, null).toString());
@@ -354,6 +368,9 @@ public class PGProvider extends ContentProvider {
             db.execSQL("CREATE TABLE " + PGContract.Posts.TABLE_NAME + " ("
                     + PGContract.Posts._ID + " INTEGER PRIMARY KEY,"
                     + PGContract.Posts.COLUMN_NAME_CONTENT + " TEXT,"
+                    + PGContract.Posts.COLUMN_NAME_POST_TYPE + " INTEGER,"
+                    + PGContract.Posts.COLUMN_NAME_OPTIONS + " STRING,"
+                    + PGContract.Posts.COLUMN_NAME_IS_MULTICHOICE + " INTEGER,"
                     + PGContract.Posts.COLUMN_NAME_AUTHOR + " TEXT,"
                     + PGContract.Posts.COLUMN_NAME_LIKES_COUNT + " INTEGER,"
                     + PGContract.Posts.COLUMN_NAME_COMMENTS_COUNT + " INTEGER,"

@@ -6,12 +6,16 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.nn.studio.episode8.R;
 import com.nn.studio.episode8.model.Post;
 import com.nn.studio.episode8.utils.HtmlImageParser;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -57,6 +61,23 @@ public class FragmentDiscussionPostPreview extends Fragment {
         author.setText(post.getAuthorAsString());
         comments.setText(post.getCommentsCountAsString());
         likes.setText(post.getLikesCountAsString());
+
+        if(post.isQuestion()){
+            JSONArray options = post.getOptions();
+            if(options != null && options.length() > 0){
+                for (int i = 0; i < options.length(); i++) {
+                    try {
+                        JSONObject opt = options.getJSONObject(i);
+                        CheckBox cb = new CheckBox(view.getContext());
+                        cb.setText(opt.getString("content"));
+                        cb.setId(opt.getInt("id"));
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
 
         return view;
     }

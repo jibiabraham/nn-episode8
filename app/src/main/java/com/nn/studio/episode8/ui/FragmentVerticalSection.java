@@ -74,7 +74,7 @@ public class FragmentVerticalSection extends Fragment implements LoaderManager.L
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if(discussion != null){
-            Uri postsInDiscussion = PGContract.Posts.getNestedUrl(discussion.forum_id, discussion._id);
+            Uri postsInDiscussion = PGContract.Posts.getNestedQuestionUrl(discussion.forum_id, discussion._id);
             return new CursorLoader(getActivity().getApplicationContext(), postsInDiscussion, null, null, null, null);
         }
         return null;
